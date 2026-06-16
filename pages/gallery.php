@@ -31,7 +31,7 @@ if (is_dir($galleryPath)) {
                     $images[] = 'images/gallery/' . $dir . '/' . $file;
                 }
             }
-            
+
             if (!empty($images)) {
                 // Kategori adını slug'dan daha düzgün bir isme çevir (örn: restoran-bar -> Restoran Bar)
                 $catName = ucwords(str_replace('-', ' ', $dir));
@@ -42,31 +42,32 @@ if (is_dir($galleryPath)) {
             }
         }
     }
-    
-    // Kategori sıralaması ve özel isimlendirmeler
+
+    // Kategori sıralaması
     $customOrder = [
-        'genel' => 'Genel',
-        'konaklama' => 'Konaklama',
-        'restoran-bar' => 'Restoran&Bar',
-        'havuz' => 'Havuz',
-        'sahil' => 'Sahil',
-        'cocuk-oyun-alani' => 'Çocuk Oyun Alanı'
+        'genel',
+        'konaklama',
+        'restoran-bar',
+        'havuz',
+        'sahil',
+        'cocuk-oyun-alani'
     ];
 
     $orderedCategories = [];
-    foreach ($customOrder as $slug => $customName) {
+    foreach ($customOrder as $slug) {
         if (isset($categories[$slug])) {
             $orderedCategories[$slug] = $categories[$slug];
-            $orderedCategories[$slug]['name'] = $customName;
+            $orderedCategories[$slug]['name'] = t('gallery.categories.' . $slug, $categories[$slug]['name']);
             unset($categories[$slug]);
         }
     }
-    
+
     // Belirtilmeyen başka klasör varsa sona ekle
     foreach ($categories as $slug => $cat) {
+        $cat['name'] = t('gallery.categories.' . $slug, $cat['name']);
         $orderedCategories[$slug] = $cat;
     }
-    
+
     $categories = $orderedCategories;
 }
 ?>
@@ -74,10 +75,10 @@ if (is_dir($galleryPath)) {
 <section class="py-5" style="background-color: var(--color-bg-light);">
     <div class="container-fluid px-4 px-lg-5">
         <?php if (!empty($categories)): ?>
-            
+
             <!-- Kategori Filtreleme Butonları -->
             <div class="d-flex flex-wrap justify-content-center gap-2 mb-5">
-                <button class="btn btn-gallery-filter rounded-pill px-4 py-2 filter-btn active" data-filter="all">Tümü</button>
+                <button class="btn btn-gallery-filter rounded-pill px-4 py-2 filter-btn active" data-filter="all"><?= e(t('gallery.categories.all', 'Tümü')) ?></button>
                 <?php foreach ($categories as $slug => $cat): ?>
                     <button class="btn btn-gallery-filter rounded-pill px-4 py-2 filter-btn" data-filter="<?= e($slug) ?>">
                         <?= e($cat['name']) ?>
@@ -114,53 +115,70 @@ if (is_dir($galleryPath)) {
 <!-- FsLightbox for Gallery -->
 <script src="https://cdn.jsdelivr.net/npm/fslightbox@3.4.1/index.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const galleryItems = document.querySelectorAll('.gallery-item');
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
 
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            // Aktif buton stilini güncelle
-            filterBtns.forEach(b => {
-                b.classList.remove('active');
-            });
-            this.classList.add('active');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Aktif buton stilini güncelle
+                filterBtns.forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
 
-            // Filtreleme işlemi
-            const filterValue = this.getAttribute('data-filter');
-            
-            galleryItems.forEach(item => {
-                if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
-                    item.style.display = 'block';
-                    // Küçük bir animasyon etkisi için timeout
-                    setTimeout(() => { item.style.opacity = '1'; item.style.transform = 'scale(1)'; }, 50);
-                } else {
-                    item.style.opacity = '0';
-                    item.style.transform = 'scale(0.8)';
-                    setTimeout(() => { item.style.display = 'none'; }, 300); // transition süresi kadar bekle
-                }
+                // Filtreleme işlemi
+                const filterValue = this.getAttribute('data-filter');
+
+                galleryItems.forEach(item => {
+                    if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                        item.style.display = 'block';
+                        // Küçük bir animasyon etkisi için timeout
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'scale(1)';
+                        }, 50);
+                    } else {
+                        item.style.opacity = '0';
+                        item.style.transform = 'scale(0.8)';
+                        setTimeout(() => {
+                            item.style.display = 'none';
+                        }, 300); // transition süresi kadar bekle
+                    }
+                });
             });
         });
     });
-});
 </script>
 <?php $extraScripts .= ob_get_clean(); ?>
 
 <?php ob_start(); ?>
 <style>
-.btn-gallery-filter {
-    border: 2px solid var(--color-primary);
-    color: var(--color-primary);
-    background-color: transparent;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-.btn-gallery-filter:hover, .btn-gallery-filter.active {
-    background-color: var(--color-primary);
-    color: var(--color-text, #212529); /* Koyu metin rengiyle okunabilirliği artırır */
-}
-.ratio-1x1:hover img { transform: scale(1.1); }
-.ratio-1x1:hover > div { opacity: 1 !important; }
-.gallery-item { transition: opacity 0.3s ease, transform 0.3s ease; }
+    .btn-gallery-filter {
+        border: 2px solid var(--color-primary);
+        color: var(--color-primary);
+        background-color: transparent;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-gallery-filter:hover,
+    .btn-gallery-filter.active {
+        background-color: var(--color-primary);
+        color: var(--color-text, #212529);
+        /* Koyu metin rengiyle okunabilirliği artırır */
+    }
+
+    .ratio-1x1:hover img {
+        transform: scale(1.1);
+    }
+
+    .ratio-1x1:hover>div {
+        opacity: 1 !important;
+    }
+
+    .gallery-item {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
 </style>
 <?php $extraHead .= ob_get_clean(); ?>
