@@ -1,0 +1,17 @@
+RewriteEngine On
+
+# Redirect language switch: /lang/xx → index.php?lang=xx
+RewriteRule ^lang/([a-z]{2})$ index.php?set_lang=$1 [L,QSA]
+
+# Static files — serve directly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Room detail: /odalar/slug → index.php?page=room-detail&slug=slug
+RewriteRule ^odalar/([a-z0-9-]+)$ index.php?page=room-detail&slug=$1 [L,QSA]
+
+# Clean URLs: /page-name → index.php?page=page-name
+RewriteRule ^([a-z0-9-]+)$ index.php?page=$1 [L,QSA]
+
+# Policy pages: /bilgi/slug → index.php?page=policy&slug=slug
+RewriteRule ^bilgi/([a-z0-9-]+)$ index.php?page=policy&slug=$1 [L,QSA]
