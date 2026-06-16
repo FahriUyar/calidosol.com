@@ -42,6 +42,32 @@ if (is_dir($galleryPath)) {
             }
         }
     }
+    
+    // Kategori sıralaması ve özel isimlendirmeler
+    $customOrder = [
+        'genel' => 'Genel',
+        'konaklama' => 'Konaklama',
+        'restoran-bar' => 'Restoran&Bar',
+        'havuz' => 'Havuz',
+        'sahil' => 'Sahil',
+        'cocuk-oyun-alani' => 'Çocuk Oyun Alanı'
+    ];
+
+    $orderedCategories = [];
+    foreach ($customOrder as $slug => $customName) {
+        if (isset($categories[$slug])) {
+            $orderedCategories[$slug] = $categories[$slug];
+            $orderedCategories[$slug]['name'] = $customName;
+            unset($categories[$slug]);
+        }
+    }
+    
+    // Belirtilmeyen başka klasör varsa sona ekle
+    foreach ($categories as $slug => $cat) {
+        $orderedCategories[$slug] = $cat;
+    }
+    
+    $categories = $orderedCategories;
 }
 ?>
 
