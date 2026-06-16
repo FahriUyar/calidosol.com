@@ -57,14 +57,14 @@ if (is_dir($galleryPath)) {
     foreach ($customOrder as $slug) {
         if (isset($categories[$slug])) {
             $orderedCategories[$slug] = $categories[$slug];
-            $orderedCategories[$slug]['name'] = t('gallery.categories.' . $slug, $categories[$slug]['name']);
+            $orderedCategories[$slug]['name'] = t('categories.' . $slug, $categories[$slug]['name']);
             unset($categories[$slug]);
         }
     }
 
     // Belirtilmeyen başka klasör varsa sona ekle
     foreach ($categories as $slug => $cat) {
-        $cat['name'] = t('gallery.categories.' . $slug, $cat['name']);
+        $cat['name'] = t('categories.' . $slug, $cat['name']);
         $orderedCategories[$slug] = $cat;
     }
 
@@ -78,7 +78,7 @@ if (is_dir($galleryPath)) {
 
             <!-- Kategori Filtreleme Butonları -->
             <div class="d-flex flex-wrap justify-content-center gap-2 mb-5">
-                <button class="btn btn-gallery-filter rounded-pill px-4 py-2 filter-btn active" data-filter="all"><?= e(t('gallery.categories.all', 'Tümü')) ?></button>
+                <button class="btn btn-gallery-filter rounded-pill px-4 py-2 filter-btn active" data-filter="all"><?= e(t('categories.all', 'Tümü')) ?></button>
                 <?php foreach ($categories as $slug => $cat): ?>
                     <button class="btn btn-gallery-filter rounded-pill px-4 py-2 filter-btn" data-filter="<?= e($slug) ?>">
                         <?= e($cat['name']) ?>
